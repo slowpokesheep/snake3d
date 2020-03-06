@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <script type="text/javascript" src="bundle.js"></script>
+</head>
+
+<body>
+
+  <div>
+    <canvas id="gl-canvas"></canvas>
+  </div>
+  <div class="optionsContainer">
+    
+    <div class="sliderContainer">
+      <div class="sliderText">
+        <p>Grow rate</p>
+        <p id="growRateText">50</p>
+      </div>
+      <input id="growRateSlider" autocomplete="off" type="range" min="1" max="50" step="1" value="50">
+    </div>
+
+    <div class="sliderContainer">
+      <div class="sliderText">
+        <p>Move amount per direction</p>
+        <p id="moveAmountText">10</p>
+      </div>
+      <input id="moveAmountSlider" autocomplete="off" type="range" min="1" max="50" step="1" value="10">
+    </div>
+
+    <div class="sliderContainer">
+      <div class="sliderText">
+        <p>Cube size</p>
+        <p id="cubeSizeText">10</p>
+      </div>
+      <input id="cubeSizeSlider" autocomplete="off" type="range" min="10" max="100" step="1" value="10">
+    </div>
+
+    <div class="toggleContainer">
+      <div class="toggleText">
+        <p id="mortalText" >Immortal</p>
+      </div>
+      <label class="switch">
+        <input id="mortalToggle" autocomplete="off" type="checkbox" checked>
+        <span class="toggle"></span>
+      </label>
+    </div>
+
+  </div>
+
+  <div class="optionsContainer">
+    <!-- Translation -->
+    <div class="sliderContainer">
+      <div class="sliderText">
+        <p>Translation x</p>
+        <p id="cameraTXText">0</p>
+      </div>
+      <input id="cameraTXSlider" autocomplete="off" type="range" min="-100" max="100" step="1" value="0">
+    </div>
+    <div class="sliderContainer">
+      <div class="sliderText">
+        <p>Translation y</p>
+        <p id="cameraTYText">0</p>
+      </div>
+      <input id="cameraTYSlider" autocomplete="off" type="range" min="-100" max="100" step="1" value="0">
+    </div>
+    <div class="sliderContainer">
+      <div class="sliderText">
+        <p>Translation z</p>
+        <p id="cameraTZText">-100</p>
+      </div>
+      <input id="cameraTZSlider" autocomplete="off" type="range" min="-200" max="0" step="1" value="-100">
+    </div>
+    <!-- Rotation -->
+    <div class="sliderContainer">
+      <div class="sliderText">
+        <p>Rotatiom x</p>
+        <p id="cameraRXText">0</p>
+      </div>
+      <input id="cameraRXSlider" autocomplete="off" type="range" min="-360" max="360" step="1" value="0">
+    </div>
+    <div class="sliderContainer">
+      <div class="sliderText">
+        <p>Rotatiom y</p>
+        <p id="cameraRYText">0</p>
+      </div>
+      <input id="cameraRYSlider" autocomplete="off" type="range" min="-360" max="360" step="1" value="0">
+    </div>
+    <div class="sliderContainer">
+      <div class="sliderText">
+        <p>Rotatiom z</p>
+        <p id="cameraRZText">0</p>
+      </div>
+      <input id="cameraRZSlider" autocomplete="off" type="range" min="-360" max="360" step="1" value="0">
+    </div>
+  </div>
+
+
+</body>
+
+</html>
