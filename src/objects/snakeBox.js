@@ -8,11 +8,11 @@ import Cube from './primitives/cube';
 import CubeLines from './primitives/cubeLines';
 
 export default class SnakeBox extends ComplexObject {
-  constructor() {
+  constructor(s) {
     super();
 
     this.snakeBox = {
-      size: 100,
+      size: s,
     };
 
     this.objects.push(new CubeLines());

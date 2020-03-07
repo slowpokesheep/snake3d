@@ -1,9 +1,9 @@
 /* eslint-disable import/no-cycle */
-import { gl, setup } from './setup/webgl';
+import { setup } from './setup/webgl';
 
 import render from './render';
 import Events from './events';
-import load from './loader';
+import { init } from './loader';
 import Options from './options';
 
 import SpatialManager from './managers/spatialManager';
@@ -21,14 +21,10 @@ window.onload = async () => {
     height: window.innerHeight,
   };
 
-  console.log(w.width)
-  console.log(w.height)
   const size = w.width < w.height ? w.width : w.height;
 
   canvas.width = size;
   canvas.height = size;
-
-  const duSlider = document.getElementById('du-modifier-slider');
 
   Options.init();
 
@@ -40,7 +36,7 @@ window.onload = async () => {
 
   await setup(canvas); // Webgl setup
 
-  load();
+  init();
 
-  render(duSlider);
+  render();
 };

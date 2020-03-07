@@ -1,8 +1,6 @@
 /* eslint-disable key-spacing */
 /* eslint-disable import/no-cycle */
-import { managers } from '../index';
 import { currentTime } from '../render';
-import { gl, shader, resetRender } from '../setup/webgl';
 import { eatKey } from '../globalKeyHandler';
 import Options from '../options';
 import ComplexObject from './extensions/complexObject';
@@ -20,24 +18,39 @@ export default class Snake extends ComplexObject {
       move: {
         currCount: 0, // Counter until next added block
         curr: -1, // Current direction
-        last: -1, // Last direction, It spawns with it's tail in x+ direction, thus first direction is always -1
+        last: -1, // Last direction, tail is in x+ direction, first direction needs to be x-
         amount: {
           total: 10, // Always moves x blocks in a given direction
           curr: 0,
         },
-      },
-      keys: {
-        add: 'R'.charCodeAt(0),
       },
     };
 
     // Head
     this.objects.push(new CubeLines());
 
+    this.spawnLocation(Options.cubeSize.value);
+    const { x, y, z } = this.objects[0].model.t;
+
     for (let i = 1; i < this.snake.len; ++i) {
       this.objects.push(new Cube());
-      this.objects[i].setTranslation(i * 1, 0, 0);
+      this.objects[i].setTranslation(x + i, y, z);
     }
+  }
+
+  spawnLocation(size) {
+    // Size with padding, size = 10
+    const newSize = size - 1; // [0 - 9)
+    const interval = Math.floor(newSize / 2); // [-4 - 5)
+
+    const pos = Math.floor(Math.random() * newSize) - interval;
+
+    // Tail always begins in x+ direction, needs room
+    let x = pos;
+    if (pos + this.snake.len > interval + 1) {
+      x = pos - this.snake.len;
+    }
+    this.objects[0].setTranslation(x, pos, pos);
   }
 
   add() {
@@ -57,16 +70,34 @@ export default class Snake extends ComplexObject {
   moveRandom() {
     // 6 directions = -z, -y, -x, x, y, z
     const directions = [-3, -2, -1, 1, 2, 3];
-    this.snake.move.curr = directions[Math.floor(Math.random() * directions.length)];
+    const currIndex = Math.floor(Math.random() * directions.length);
+
+    this.snake.move.curr = directions[currIndex];
 
     // Cant only travel in 5 directions
     if (this.snake.move.last === -this.snake.move.curr) {
-      this.snake.move.curr = directions + 1 > directions.length ? directions - 1 : directions + 1;
+
+      // Pick a new direction next to the current one in the direction array
+      if (currIndex + 1 >= directions.length) {
+        this.snake.move.curr = directions[currIndex - 1];
+      }
+      else {
+        this.snake.move.curr = directions[currIndex + 1];
+      }
     }
   }
 
   moveAmount() {
-    if (this.snake.move.amount.curr === 0) this.moveRandom();
+    if (this.snake.move.amount.curr === 0) {
+      if (Options.randomDir.on) this.moveRandom();
+      else if (Options.xUp.on) this.snake.move.curr = 1;
+      else if (Options.xDown.on) this.snake.move.curr = -1;
+      else if (Options.yUp.on) this.snake.move.curr = 2;
+      else if (Options.yDown.on) this.snake.move.curr = -2;
+      else if (Options.zUp.on) this.snake.move.curr = 3;
+      else if (Options.zDown.on) this.snake.move.curr = -3;
+
+    }
 
     this.snake.move.currCount++;
     this.snake.move.amount.curr++;
@@ -105,7 +136,9 @@ export default class Snake extends ComplexObject {
       case -3: // In, z
         this.objects[0].modTranslation(0, 0, -1);
         break;
-      default: break;
+      default: // Should never happen
+        this.objects[0].setTranslation(0, 0, 0);
+        break;
     }
 
     this.snake.move.last = this.snake.move.curr;
@@ -129,9 +162,27 @@ export default class Snake extends ComplexObject {
 
     // Inverse collision of the head, move it to the other side
     // of the box
-    ob = this.isInvertColliding();
+    ob = this.isSingleInvertColliding();
     if (ob) {
-      object.setTranslation(-currT.x, -currT.y, -currT.z);
+      const { x, y, z } = this.objects[0].model.t;
+
+      switch (this.snake.move.curr) {
+        case 1:
+        case -1: // x
+          object.setTranslation(-x, y, z);
+          break;
+        case 2:
+        case -2: // y
+          object.setTranslation(x, -y, z);
+          break;
+        case 3:
+        case -3: // z
+          object.setTranslation(x, y, -z);
+          break;
+        default: // Should never happen
+          object.setTranslation(0, 0, 0);
+          break;
+      }
     }
   }
 
@@ -199,11 +250,6 @@ export default class Snake extends ComplexObject {
   }
 
   objectUpdate(du) {
-    // Add new cube to the snake
-    if (eatKey(this.snake.keys.add)) {
-      this.add();
-    }
-
     this.checkOptions();
 
     // Movement update

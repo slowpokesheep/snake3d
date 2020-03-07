@@ -1,4 +1,5 @@
 /* eslint-disable import/no-cycle */
+import Options from './options';
 import { managers } from './index';
 
 import Template from './objects/template';
@@ -8,24 +9,27 @@ import Box from './objects/box';
 import Snake from './objects/snake';
 import SnakeBox from './objects/snakeBox';
 
-export default function load() {
-  //const te = new Template();
-  //const t = new Tester();
-  //const tt = new Tester();
-  //const ttt = new Tester();
-  //t.setTranslation(-2, 0, -6);
-  //tt.setTranslation(2, 0, -4);
-  //ttt.setTranslation(0, 0, 4);
-  //managers.obj.add(t, tt, ttt, te);
-
-  //managers.obj.add(
-  //  t,
-  //);
-  //////sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
-
-  managers.obj.addEnviroment(new SnakeBox());
-
+export function init() {
+  managers.obj.addEnviroment(new SnakeBox(Options.cubeSize.value));
   managers.obj.add(
     new Snake(),
   );
+}
+
+// sssssssssssss
+
+export function addSnake() {
+  managers.obj.add(new Snake());
+}
+
+export function addTail() {
+  managers.obj.objects.forEach((o) => {
+    o.add();
+  });
+}
+
+export function changeDirectionSnake() {
+  managers.obj.objects.forEach((o) => {
+    o.add();
+  });
 }

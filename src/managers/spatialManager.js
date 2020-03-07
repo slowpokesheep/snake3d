@@ -1,3 +1,5 @@
+/* eslint-disable import/no-cycle */
+import Options from '../options';
 import { vectorDistance } from '../utils/util';
 
 export default class SpatialManager {
@@ -54,11 +56,11 @@ export default class SpatialManager {
       const env = this.spatial.enviroments[i];
 
       if (env) {
+        const cubeWall = Options.cubeSize.value / 2;
 
-        const dist = vectorDistance(pos, env.model.t) + radius;
-        const threshold = env.model.s.x / 2;
-
-        if (dist > threshold) {
+        if (   pos.x >= cubeWall || pos.x <= -cubeWall
+            || pos.y >= cubeWall || pos.y <= -cubeWall
+            || pos.z >= cubeWall || pos.z <= -cubeWall) {
           return env;
         }
       }

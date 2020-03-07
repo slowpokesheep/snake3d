@@ -36,6 +36,13 @@ export default class ComplexObject {
     return null;
   }
 
+  // To check only the controlling object, snake head
+  isSingleInvertColliding() {
+    const e = this.objects[0].isInvertColliding();
+    if (e) return e;
+    return null;
+  }
+
   setScale(x, y, z) {
     this.objects.forEach((o) => {
       o.setScale(x, y, z);
@@ -62,6 +69,7 @@ export default class ComplexObject {
 
     // Death animation plays and then the object is removed
     if (this.dead && currentTime - this.timeOfDeath >= this.deathAnimation) {
+      this.dead = false;
       managers.obj.remove(this); // Remove from object manager
     }
   }

@@ -11,6 +11,7 @@ import {
 import { gl, shader } from '../../setup/webgl';
 import { managers } from '../../index';
 import Options from '../../options';
+import { eatKey } from '../../globalKeyHandler';
 import Events from '../../events';
 import { flatten } from '../../Common/MV';
 
@@ -31,10 +32,12 @@ export default class BasicObject {
 
     this.basicKeys = {
       off: 'C'.charCodeAt(0),
-      up: 'W'.charCodeAt(0),
-      left: 'A'.charCodeAt(0),
-      down: 'S'.charCodeAt(0),
-      right: 'D'.charCodeAt(0),
+      up: 'W'.charCodeAt(0),    // y+
+      left: 'A'.charCodeAt(0),  // x-
+      down: 'S'.charCodeAt(0),  // y-
+      right: 'D'.charCodeAt(0), // x+
+      in: 'E'.charCodeAt(0),    // z-
+      out: 'Q'.charCodeAt(0),   // z+
       rotate: {
         up: 'I'.charCodeAt(0),
         left: 'J'.charCodeAt(0),
@@ -68,6 +71,21 @@ export default class BasicObject {
     if (spatial) {
       this.spatialID = managers.spatial.getNewSpatialID();
     }
+  }
+
+  resetCamera() {
+    // Translation
+    this.view.t.x = 0;
+    this.view.t.y = 0;
+    this.view.t.z = -100;
+
+    // Rotation
+    this.view.r.x = 0;
+    this.view.r.y = 0;
+    this.view.r.z = 0;
+    this.setView();
+
+    this.updateOptions();
   }
 
   // Methods to initialize buffer
@@ -205,6 +223,11 @@ export default class BasicObject {
     }
 
     if (optionsChange) this.setView();
+
+    if (Options.resetCamera.on) {
+      this.resetCamera();
+      Options.resetCamera.on = false;
+    }
   }
 
   updateOptions() {
@@ -212,6 +235,12 @@ export default class BasicObject {
     const e = { target: { value: null } };
 
     // Translation
+    e.target.value = this.view.t.x;
+    Options.camera.t.x.id.slider.onchange(e);
+
+    e.target.value = this.view.t.y;
+    Options.camera.t.y.id.slider.onchange(e);
+
     e.target.value = this.view.t.z;
     Options.camera.t.z.id.slider.onchange(e);
 
@@ -221,6 +250,9 @@ export default class BasicObject {
 
     e.target.value = this.view.r.y;
     Options.camera.r.y.id.slider.onchange(e);
+
+    e.target.value = this.view.r.z;
+    Options.camera.r.z.id.slider.onchange(e);
   }
 
   update(du) {
@@ -244,49 +276,42 @@ export default class BasicObject {
     }
 
 
-    /*
-    if (!Events.toggleKeys[this.basicKeys.off]) {
-      const { spin } = Events.mouse;
-
-      // Mouse click and move camera around
-      if (Events.mouse.update) {
-        this.view.r.x = spin.x;
-        this.view.r.y = spin.y;
-      }
-
-      // Scroll wheel
-      this.view.t.z = Events.mouse.z;
-
-      // Opposite values to represent the camera
-      if (Events.keys[this.basicKeys.up]) {
-        this.view.t.y += 0.2;
-      }
-      if (Events.keys[this.basicKeys.down]) {
-        this.view.t.y -= 0.2;
-      }
-      if (Events.keys[this.basicKeys.left]) {
-        this.view.t.x += 0.2;
-      }
-      if (Events.keys[this.basicKeys.right]) {
-        this.view.t.x -= 0.2;
-      }
-
-      if (Events.keys[this.basicKeys.rotate.up]) {
-        this.view.r.x -= 1.0;
-      }
-      if (Events.keys[this.basicKeys.rotate.down]) {
-        this.view.r.x += 1.0;
-      }
-      if (Events.keys[this.basicKeys.rotate.left]) {
-        this.view.r.y -= 1.0;
-      }
-      if (Events.keys[this.basicKeys.rotate.right]) {
-        this.view.r.y += 1.0;
-      }
+    // Keyboard camera movement
+    if (eatKey(this.basicKeys.up)) {
+      this.view.t.y += 1;
+      this.updateOptions();
       this.setView();
     }
-    */
 
+    if (eatKey(this.basicKeys.down)) {
+      this.view.t.y -= 1;
+      this.updateOptions();
+      this.setView();
+    }
+
+    if (eatKey(this.basicKeys.right)) {
+      this.view.t.x += 1;
+      this.updateOptions();
+      this.setView();
+    }
+
+    if (eatKey(this.basicKeys.left)) {
+      this.view.t.x -= 1;
+      this.updateOptions();
+      this.setView();
+    }
+
+    if (eatKey(this.basicKeys.in)) {
+      this.view.t.z -= 1;
+      this.updateOptions();
+      this.setView();
+    }
+
+    if (eatKey(this.basicKeys.out)) {
+      this.view.t.z += 1;
+      this.updateOptions();
+      this.setView();
+    }
   }
 
   render() {
