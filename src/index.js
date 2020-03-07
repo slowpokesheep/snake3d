@@ -20,7 +20,6 @@ window.onload = async () => {
     width: window.innerWidth,
     height: window.innerHeight,
   };
-
   const size = w.width < w.height ? w.width : w.height;
 
   canvas.width = size;

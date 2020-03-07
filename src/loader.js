@@ -16,8 +16,6 @@ export function init() {
   );
 }
 
-// sssssssssssss
-
 export function addSnake() {
   managers.obj.add(new Snake());
 }
